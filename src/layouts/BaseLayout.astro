@@ -1,0 +1,180 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = '一个安静的技术博客' } = Astro.props;
+import SideBar from './SideBar.astro';
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title} | MosBlog</title>
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body>
+    <div class="layout">
+      <!-- 左侧侧边栏 -->
+      <SideBar/>
+
+      <!-- 右侧内容区 -->
+      <main class="main">
+        <slot />
+      </main>
+    </div>
+  </body>
+</html>
+
+<style is:global>
+  :root {
+    --color-bg: #ffffff;
+    --color-text: #333333;
+    --color-text-light: #666666;
+    --color-accent: #4571ca;
+    --color-border: #e5e5e5;
+    --color-code-bg: #f6f8fa;
+    --sidebar-width: 280px;
+    --content-max-width: 800px;
+    --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-bg: #1a1a2e;
+      --color-text: #e0e0e0;
+      --color-text-light: #a0a0a0;
+      --color-accent: #6c8eea;
+      --color-border: #2d2d44;
+      --color-code-bg: #252538;
+    }
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    font-family: var(--font-sans);
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    line-height: 1.6;
+  }
+
+  body {
+    min-height: 100vh;
+  }
+
+  a {
+    color: var(--color-accent);
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
+
+  a:hover {
+    opacity: 0.8;
+  }
+
+  .layout {
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* 侧边栏 */
+  .sidebar {
+    width: var(--sidebar-width);
+    padding: 2rem;
+    border-right: 1px solid var(--color-border);
+    position: fixed;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--color-bg);
+  }
+
+  .profile {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin: 0 auto 1rem;
+    border: 3px solid var(--color-accent);
+  }
+
+  .avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  .bio {
+    font-size: 0.875rem;
+    color: var(--color-text-light);
+  }
+
+  .nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+  }
+
+  .nav a {
+    color: var(--color-text);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    transition: background-color 0.2s, color 0.2s;
+  }
+
+  .nav a:hover {
+    background-color: var(--color-code-bg);
+    opacity: 1;
+  }
+
+  .social {
+    margin-top: auto;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    font-size: 0.875rem;
+    color: var(--color-text-light);
+  }
+
+  /* 主内容区 */
+  .main {
+    flex: 1;
+    margin-left: var(--sidebar-width);
+    padding: 3rem 2rem;
+    max-width: calc(100vw - var(--sidebar-width));
+  }
+
+  /* 响应式设计 */
+  @media (max-width: 768px) {
+    .layout {
+      flex-direction: column;
+    }
+
+    .main {
+      margin-left: 0;
+      max-width: 100vw;
+      padding: 1.5rem;
+    }
+  }
+</style>

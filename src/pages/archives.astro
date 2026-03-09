@@ -1,0 +1,300 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const posts = await getCollection('posts');
+
+// 按年份分组文章
+const postsByYear = posts.reduce((acc, post) => {
+  const year = new Date(post.data.pubDate).getFullYear();
+  if (!acc[year]) {
+    acc[year] = [];
+  }
+  acc[year].push(post);
+  return acc;
+}, {} as Record<string, typeof posts>);
+
+// 按年份降序排列
+const years = Object.keys(postsByYear).sort((a, b) => Number(b) - Number(a));
+---
+
+<BaseLayout title="归档" description="MosBlog - 文章归档">
+  <div class="archives-page">
+    <!-- 文章列表 -->
+    <div class="archives-list">
+      {years.map((year) => (
+        <div class="year-section" id={`year-${year}`}>
+          <!-- 年份分割线 -->
+          <div class="year-divider">
+            <span class="year-label">{year}</span>
+          </div>
+
+          <!-- 该年份的文章列表 -->
+          <div class="year-posts">
+            {postsByYear[year]
+              .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+              .map((post) => (
+                <article class="post-item">
+                  <a href={`/posts/${post.slug}/`} class="post-link">
+                    <span class="post-date">
+                      {new Date(post.data.pubDate).toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' })}
+                    </span>
+                    <span class="post-title">{post.data.title}</span>
+                  </a>
+                </article>
+              ))}
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <!-- 右侧时间轴 -->
+    <aside class="timeline">
+      <div class="timeline-track" id="timeline-track">
+        {years.map((year, index) => (
+          <a
+            href={`#year-${year}`}
+            class="timeline-item"
+            data-year={year}
+            data-index={index}
+            data-total={years.length}
+          >
+            {year}
+          </a>
+        ))}
+      </div>
+      <!-- 滑块 -->
+      <div class="timeline-slider-track">
+        <div class="timeline-slider" id="timeline-slider"></div>
+      </div>
+    </aside>
+  </div>
+</BaseLayout>
+
+<script>
+  // 时间轴滑块跟随滚动
+  const slider = document.getElementById('timeline-slider');
+  const sliderTrack = document.querySelector('.timeline-slider-track');
+  const yearSections = document.querySelectorAll('.year-section');
+  const timelineItems = document.querySelectorAll('.timeline-item');
+
+  function updateSlider() {
+    const scrollTop = window.scrollY;
+    const windowHeight = window.innerHeight;
+    const docHeight = document.documentElement.scrollHeight;
+
+    // 计算滚动比例
+    const scrollableHeight = docHeight - windowHeight;
+    const scrollRatio = Math.min(Math.max(scrollTop / scrollableHeight, 0), 1);
+
+    // 获取滑块轨道的可用高度
+    if (slider && sliderTrack) {
+      const trackHeight = sliderTrack.clientHeight;
+      const sliderHeight = slider.clientHeight;
+      const maxTop = trackHeight - sliderHeight;
+      const sliderTop = maxTop * scrollRatio;
+      slider.style.top = `${sliderTop}px`;
+    }
+
+    // 高亮当前年份
+    let currentYear = '';
+    yearSections.forEach((section) => {
+      const rect = section.getBoundingClientRect();
+      if (rect.top <= windowHeight / 2) {
+        currentYear = section.id.replace('year-', '');
+      }
+    });
+
+    timelineItems.forEach((item) => {
+      if (item.getAttribute('data-year') === currentYear) {
+        item.classList.add('active');
+      } else {
+        item.classList.remove('active');
+      }
+    });
+  }
+
+  window.addEventListener('scroll', updateSlider);
+  updateSlider();
+</script>
+
+<style>
+  .archives-page {
+    display: flex;
+    gap: 2rem;
+    max-width: var(--content-max-width);
+    margin: 0 auto;
+    position: relative;
+  }
+
+  /* 文章列表区域 */
+  .archives-list {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .year-section {
+    margin-bottom: 1rem;
+  }
+
+  /* 年份分割线 */
+  .year-divider {
+    display: flex;
+    align-items: center;
+    margin: 2rem 0 1.5rem;
+    position: relative;
+  }
+
+  .year-divider::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 1px;
+    background-color: var(--color-border);
+  }
+
+  .year-label {
+    position: relative;
+    background-color: var(--color-bg);
+    padding-right: 1rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-accent);
+    z-index: 1;
+  }
+
+  .year-posts {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .post-item {
+    padding: 0.5rem 0;
+  }
+
+  .post-link {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    color: var(--color-text);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .post-link:hover {
+    color: var(--color-accent);
+  }
+
+  .post-date {
+    flex-shrink: 0;
+    width: 50px;
+    font-size: 0.85rem;
+    color: var(--color-text-light);
+  }
+
+  .post-title {
+    font-weight: 500;
+  }
+
+  /* 右侧时间轴 */
+  .timeline {
+    position: sticky;
+    top: 2rem;
+    height: fit-content;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem 0;
+  }
+
+  .timeline-track {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-height: 240px;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+    /* 隐藏滚动条但保持滚动功能 */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .timeline-track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .timeline-item {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--color-text-light);
+    text-decoration: none;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .timeline-item:hover {
+    color: var(--color-accent);
+    background-color: var(--color-code-bg);
+  }
+
+  .timeline-item.active {
+    color: var(--color-accent);
+    font-weight: 600;
+    background-color: var(--color-code-bg);
+  }
+
+  /* 滑块轨道 - 高度与年份列表一致 */
+  .timeline-slider-track {
+    position: absolute;
+    right: -8px;
+    top: 1rem;
+    width: 4px;
+    height: 240px;
+    background-color: var(--color-border);
+    border-radius: 2px;
+  }
+
+  .timeline-slider {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 8px;
+    height: 24px;
+    background-color: var(--color-accent);
+    border-radius: 4px;
+    transition: top 0.1s ease-out;
+  }
+
+  /* 响应式 */
+  @media (max-width: 768px) {
+    .archives-page {
+      flex-direction: column;
+    }
+
+    .timeline {
+      position: relative;
+      top: 0;
+      flex-direction: row;
+      overflow-x: auto;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid var(--color-border);
+      margin-bottom: 1rem;
+    }
+
+    .timeline-track {
+      flex-direction: row;
+      max-height: none;
+      overflow-x: auto;
+      overflow-y: hidden;
+    }
+
+    .timeline-slider-track {
+      display: none;
+    }
+  }
+</style>

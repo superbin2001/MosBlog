@@ -1,17 +1,181 @@
 ---
+import type { CollectionEntry } from 'astro:content';
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
 
+// 日期降序获取文章
+const posts: CollectionEntry<'posts'>[] = (await getCollection('posts')).sort(
+  (a: CollectionEntry<'posts'>, b: CollectionEntry<'posts'>) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+const formatDate = (date: Date) => {
+  return new Date(date).toLocaleDateString('zh-CN', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+};
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout title="首页" description="MosBlog - 技术博客">
+  <div class="home">
+    <header class="page-header">
+      <h2 class="greeting">你好，我是灰云盖雪 </h2>
+      <p class="intro">
+        人总是要留下点什么，随便写写吧。
+      </p>
+    </header>
+
+    <section class="posts-section">
+      <h3 class="section-title">最近文章</h3>
+      <div class="post-list">
+        {posts.slice(0,5).map((post: CollectionEntry<'posts'>) => (
+          <article class="post-card">
+            <a href={`/posts/${post.slug}/`} class="post-link">
+              <div class="post-content">
+                <h2 class="post-title">{post.data.title}</h2>
+                <p class="post-description">{post.data.description}</p>
+                <div class="post-meta">
+                  <time datetime={post.data.pubDate.toISOString()}>
+                    {formatDate(post.data.pubDate)}
+                  </time>
+                  {post.data.tags.length > 0 && (
+                    <span class="post-tags">
+                      {post.data.tags.join(', ')}
+                    </span>
+                  )}
+                </div>
+              </div>
+              {post.data.heroImage && (
+                <div class="post-image">
+                  <img src={post.data.heroImage} alt={post.data.title} />
+                </div>
+              )}
+            </a>
+          </article>
+        ))}
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .home {
+    max-width: var(--content-max-width);
+    margin: 0 auto;
+  }
+
+  .page-header {
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .greeting {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+  }
+
+  .intro {
+    color: var(--color-text-light);
+    font-size: 1.1rem;
+  }
+
+  .section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    padding-left: 0.75rem;
+    border-left: 3px solid var(--color-accent);
+  }
+
+  .post-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .post-card {
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .post-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  }
+
+  .post-link {
+    display: flex;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .post-link:hover {
+    opacity: 1;
+  }
+
+  .post-content {
+    flex: 1;
+    padding: 1.5rem;
+  }
+
+  .post-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--color-text);
+    transition: color 0.2s;
+  }
+
+  .post-card:hover .post-title {
+    color: var(--color-accent);
+  }
+
+  .post-description {
+    color: var(--color-text-light);
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .post-meta {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.8rem;
+    color: var(--color-text-light);
+  }
+
+  .post-tags {
+    color: var(--color-accent);
+  }
+
+  .post-image {
+    width: 200px;
+    display: none;
+  }
+
+  .post-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  @media (min-width: 900px) {
+    .post-image {
+      display: block;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .post-link {
+      flex-direction: column;
+    }
+  }
+</style>
