@@ -1,8 +1,13 @@
+---
+import { Image } from "astro:assets"
+import avatar from "../assets/HygxAvatar.jpg"
+---
 <aside class="sidebar">
     <div class="profile">
         <div class="avatar">
-            <img
-                src="https://api.dicebear.com/7.x/avataaars/svg?seed=MosBlog"
+            <Image
+                priority
+                src={avatar}
                 alt="Avatar"
             />
         </div>
