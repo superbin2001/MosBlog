@@ -1,5 +1,6 @@
 ---
 import type { CollectionEntry } from 'astro:content';
+import { Image } from 'astro:assets';
 import SideBar from './SideBar.astro';
 
 interface Props {
@@ -35,7 +36,14 @@ const formattedDate = new Date(pubDate).toLocaleDateString('zh-CN', {
         <article class="article">
           <!-- 文章头部 -->
           <header class="article-header">
-            {heroImage && <img class="hero-image" src={heroImage} alt={title} />}
+            {heroImage && (
+              <Image
+                class="hero-image"
+                src={heroImage}
+                alt={title}
+                inferSize={true}
+              />
+            )}
             <h1 class="title">{title}</h1>
             <div class="meta">
               <time datetime={pubDate.toISOString()}>{formattedDate}</time>

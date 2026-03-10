@@ -7,4 +7,12 @@ export default defineConfig({
   srcDir: './src',
   outDir: './dist',
   publicDir: './public',
+  image: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
+    ],
+  },
 });

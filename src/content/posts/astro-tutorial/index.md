@@ -2,7 +2,7 @@
 title: 'Astro 使用指南'
 description: '详细介绍 Astro 框架的基本用法和最佳实践。'
 pubDate: '2024-01-20'
-heroImage: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800'
+heroImage: './image.png'
 tags: ['Astro', '教程', '前端']
 categories: ['教程']
 ---

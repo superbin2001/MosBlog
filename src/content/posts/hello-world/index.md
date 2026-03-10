@@ -2,7 +2,7 @@
 title: '你好，世界！'
 description: '这是我的第一篇博客文章，记录了博客搭建的过程。'
 pubDate: '2024-01-15'
-heroImage: 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=800'
+heroImage: './hero.jpg'
 tags: ['随笔', '建站']
 categories: ['日志']
 ---
