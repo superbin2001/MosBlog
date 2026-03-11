@@ -102,10 +102,11 @@
   overflow: hidden;
 }
 
-.post-image :global(img) {
-  width: 100%;
-  height: 100%;
+.post-image img {
+  width: 200px;
+  height: 150px;
   object-fit: cover;
+  object-position: center;
 }
 
 @media (min-width: 900px) {

@@ -1,7 +1,7 @@
 ---
 title: '你好，世界！'
 description: '这是我的第一篇博客文章，记录了博客搭建的过程。'
-pubDate: '2024-01-15'
+pubDate: '2026-03-11'
 heroImage: './hero.jpg'
 tags: ['随笔', '建站']
 categories: ['日志']
