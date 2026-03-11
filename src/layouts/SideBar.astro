@@ -1,4 +1,5 @@
 ---
+import '../styles/SideBar.css';
 import { Image } from "astro:assets"
 import avatar from "../assets/HygxAvatar.jpg"
 ---
@@ -12,7 +13,7 @@ import avatar from "../assets/HygxAvatar.jpg"
             />
         </div>
         <h1 class="name">MosBlog</h1>
-        <p class="bio">一个安静的技术博客</p>
+        <p class="bio">一个不吵闹的的博客</p>
     </div>
     <nav class="nav">
         <a href="/">首页</a>
@@ -25,16 +26,3 @@ import avatar from "../assets/HygxAvatar.jpg"
         <a href="hygx2001@gmail.com">Email</a>
     </div>
 </aside>
-
-<style>
-    @media (max-width: 768px) {
-        .sidebar {
-            position: relative;
-            width: 100%;
-            height: auto;
-            padding: 1.5rem;
-            border-right: none;
-            border-bottom: 1px solid var(--color-border);
-        }
-    }
-</style>
